@@ -1,0 +1,145 @@
+/* ============================================
+    Subject.module.css
+    Vestige — Ashborne
+    Styles for the subject detail page
+   ============================================ */
+
+.container {
+    min-height: 100vh;
+    background: var(--colour-bg-primary);
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 2rem;
+    border-bottom: 1px solid var(--colour-border);
+    background: var(--colour-bg-card);
+}
+
+.logo {
+    font-size: 1.5rem;
+    color: var(--colour-accent);
+    letter-spacing: 0.1em;
+}
+
+.backButton {
+    font-size: 0.75rem;
+    padding: 0.4rem 0.9rem;
+    letter-spacing: 0.1em;
+}
+
+.main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2.5rem 2rem;
+}
+
+.pageHeader {
+    margin-bottom: 2rem;
+}
+
+.pageHeader h2 {
+    margin-bottom: 0.25rem;
+}
+
+.pageHeader p {
+    margin-bottom: 0;
+}
+
+.createForm {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+}
+
+.createInput {
+    flex: 1;
+}
+
+.createButton {
+    white-space: nowrap;
+    padding: 0.5rem 1.25rem;
+    border-color: var(--colour-accent);
+    color: var(--colour-accent);
+}
+
+.createButton:hover {
+    background: var(--colour-accent);
+    color: var(--colour-bg-primary);
+}
+
+.emptyState {
+    padding: 3rem 0;
+    text-align: center;
+    border: 1px dashed var(--colour-border);
+    border-radius: var(--radius-lg);
+}
+
+.emptyState p {
+    color: var(--colour-text-muted);
+    font-family: var(--font-ui);
+    font-size: 0.875rem;
+    margin-bottom: 0;
+}
+
+.topicList {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.topicItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--colour-bg-card);
+    border: 1px solid var(--colour-border);
+    border-radius: var(--radius-md);
+    padding: 1rem 1.25rem;
+    transition: border-color var(--transition-fast);
+}
+
+.topicItem:hover {
+    border-color: var(--colour-accent);
+}
+
+.topicName {
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: var(--font-primary);
+    font-size: 1.1rem;
+    color: var(--colour-text-primary);
+    cursor: pointer;
+    text-align: left;
+    letter-spacing: 0;
+    text-transform: none;
+}
+
+.topicName:hover {
+    color: var(--colour-accent);
+    border: none;
+}
+
+.deleteButton {
+    font-size: 0.7rem;
+    padding: 0.3rem 0.75rem;
+    color: var(--colour-text-muted);
+    border-color: var(--colour-border);
+    letter-spacing: 0.1em;
+}
+
+.deleteButton:hover {
+    border-color: var(--colour-danger);
+    color: var(--colour-danger);
+}
+
+.error {
+    font-family: var(--font-ui);
+    font-size: 0.8rem;
+    color: var(--colour-danger);
+    margin-bottom: 1rem;
+}
