@@ -1,0 +1,129 @@
+/* ============================================
+    Flashcard.module.css
+    Vestige — Ashborne
+    Styles for the flippable flashcard component.
+    Uses CSS 3D transforms for the flip animation.
+   ============================================ */
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    width: 100%;
+}
+
+/* Perspective needed on the parent for 3D effect —
+     lower value = more dramatic perspective */
+.card {
+    width: 100%;
+    max-width: 640px;
+    height: 280px;
+    cursor: pointer;
+    perspective: 1000px;
+    position: relative;
+}
+
+/* Inner card holds both faces and does the rotation */
+.card > div {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--colour-border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    transition: transform 0.5s ease;
+}
+
+/* Front face — shown by default */
+.front {
+    background: var(--colour-bg-card);
+    transform: rotateY(0deg);
+}
+
+/* Back face — pre-rotated 180deg so it starts hidden */
+.back {
+    background: var(--colour-bg-secondary);
+    transform: rotateY(180deg);
+}
+
+/* When flipped class is applied, front rotates away
+     and back rotates into view */
+.flipped .front {
+    transform: rotateY(-180deg);
+}
+
+.flipped .back {
+    transform: rotateY(0deg);
+}
+
+/* Small label showing "Question" or "Answer" */
+.faceLabel {
+    font-family: var(--font-ui);
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--colour-text-muted);
+    position: absolute;
+    top: 1.25rem;
+}
+
+/* The main card text */
+.cardText {
+    font-family: var(--font-primary);
+    font-size: 1.4rem;
+    color: var(--colour-text-primary);
+    text-align: center;
+    line-height: 1.5;
+    margin-bottom: 0;
+}
+
+/* Subtle hint shown on the front face only */
+.flipHint {
+    font-family: var(--font-ui);
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    color: var(--colour-text-muted);
+    position: absolute;
+    bottom: 1.25rem;
+}
+
+/* Correct/incorrect buttons shown after flip */
+.actions {
+    display: flex;
+    gap: 1rem;
+    width: 100%;
+    max-width: 640px;
+}
+
+.incorrectButton, .correctButton {
+    flex: 1;
+    padding: 0.75rem;
+    font-size: 0.875rem;
+    letter-spacing: 0.1em;
+}
+
+.incorrectButton {
+    border-color: var(--colour-danger);
+    color: var(--colour-danger);
+}
+
+.incorrectButton:hover {
+    background: var(--colour-danger);
+    color: var(--colour-bg-primary);
+}
+
+.correctButton {
+    border-color: var(--colour-success);
+    color: var(--colour-success);
+}
+
+.correctButton:hover {
+    background: var(--colour-success);
+    color: var(--colour-bg-primary);
+}

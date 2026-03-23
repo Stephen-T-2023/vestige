@@ -1,0 +1,308 @@
+/* ============================================
+    Topic.module.css
+    Vestige — Ashborne
+    Styles for the topic detail page
+   ============================================ */
+
+.container {
+    min-height: 100vh;
+    background: var(--colour-bg-primary);
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 2rem;
+    border-bottom: 1px solid var(--colour-border);
+    background: var(--colour-bg-card);
+}
+
+.logo {
+    font-size: 1.5rem;
+    color: var(--colour-accent);
+    letter-spacing: 0.1em;
+}
+
+/* Breadcrumb navigation — Dashboard > Subject > Topic */
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-ui);
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+}
+
+.breadcrumb button {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 0.75rem;
+    color: var(--colour-text-muted);
+    text-transform: none;
+    letter-spacing: 0.05em;
+}
+
+.breadcrumb button:hover {
+    color: var(--colour-accent);
+    border: none;
+}
+
+.breadcrumb span {
+    color: var(--colour-text-muted);
+}
+
+.main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2.5rem 2rem;
+}
+
+.pageHeader {
+    margin-bottom: 1.5rem;
+}
+
+.pageHeader h2 {
+    margin-bottom: 0.25rem;
+}
+
+.pageHeader p {
+    font-family: var(--font-ui);
+    font-size: 0.8rem;
+    color: var(--colour-text-muted);
+    margin-bottom: 0;
+}
+
+/* Study mode button */
+.studyButton {
+    display: inline-block;
+    margin-bottom: 2rem;
+    padding: 0.6rem 1.5rem;
+    border-color: var(--colour-accent);
+    color: var(--colour-accent);
+    font-size: 0.875rem;
+    letter-spacing: 0.1em;
+}
+
+.studyButton:hover {
+    background: var(--colour-accent);
+    color: var(--colour-bg-primary);
+}
+
+/* Add flashcard form */
+.createForm {
+    background: var(--colour-bg-card);
+    border: 1px solid var(--colour-border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.createForm h3 {
+    font-size: 0.875rem;
+    font-family: var(--font-ui);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--colour-text-secondary);
+    margin-bottom: 1rem;
+}
+
+/* Front and back inputs side by side */
+.cardInputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.field label {
+    font-family: var(--font-ui);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--colour-text-secondary);
+}
+
+.createButton {
+    padding: 0.5rem 1.25rem;
+    border-color: var(--colour-accent);
+    color: var(--colour-accent);
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+}
+
+.createButton:hover {
+    background: var(--colour-accent);
+    color: var(--colour-bg-primary);
+}
+
+.emptyState {
+    padding: 3rem 0;
+    text-align: center;
+    border: 1px dashed var(--colour-border);
+    border-radius: var(--radius-lg);
+}
+
+.emptyState p {
+    color: var(--colour-text-muted);
+    font-family: var(--font-ui);
+    font-size: 0.875rem;
+    margin-bottom: 0;
+}
+
+/* Flashcard list */
+.flashcardList {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.flashcardItem {
+    background: var(--colour-bg-card);
+    border: 1px solid var(--colour-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    transition: border-color var(--transition-fast);
+}
+
+.flashcardItem:hover {
+    border-color: var(--colour-accent);
+}
+
+/* Clickable row showing the front of the card */
+.flashcardToggle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    background: none;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--colour-text-primary);
+    gap: 1rem;
+}
+
+.flashcardToggle:hover {
+    border: none;
+    color: var(--colour-text-primary);
+}
+
+/* Front label and text stacked vertically */
+.cardFrontWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    flex: 1;
+}
+
+.cardFrontLabel {
+    font-family: var(--font-ui);
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--colour-text-muted);
+}
+
+.cardFront {
+    font-family: var(--font-primary);
+    font-size: 0.95rem;
+    color: var(--colour-text-primary);
+}
+
+.toggleIcon {
+    font-size: 0.6rem;
+    color: var(--colour-text-muted);
+    flex-shrink: 0;
+}
+
+/* Back of card revealed on expand */
+.cardBack {
+    padding: 0.75rem 1.25rem 1rem;
+    border-top: 1px solid var(--colour-border);
+    background: var(--colour-bg-secondary);
+    overflow: hidden;
+}
+
+
+.cardBack p {
+    font-size: 0.95rem;
+    color: var(--colour-text-primary);
+    margin-bottom: 0;
+}
+
+/* Action bar at the bottom of each card */
+.cardActions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    padding: 0.5rem 1.25rem;
+    border-top: 1px solid var(--colour-border);
+    background: var(--colour-bg-secondary);
+}
+
+.deleteButton {
+    font-size: 0.7rem;
+    padding: 0.3rem 0.75rem;
+    color: var(--colour-text-muted);
+    border-color: var(--colour-border);
+    letter-spacing: 0.1em;
+}
+
+.deleteButton:hover {
+    border-color: var(--colour-danger);
+    color: var(--colour-danger);
+}
+
+/* Confirmation state styles */
+.confirmText {
+    font-family: var(--font-ui);
+    font-size: 0.75rem;
+    color: var(--colour-danger);
+    letter-spacing: 0.05em;
+}
+
+.confirmButton {
+    font-size: 0.7rem;
+    padding: 0.3rem 0.75rem;
+    border-color: var(--colour-danger);
+    color: var(--colour-danger);
+    letter-spacing: 0.1em;
+}
+
+.confirmButton:hover {
+    background: var(--colour-danger);
+    color: var(--colour-bg-primary);
+}
+
+.cancelButton {
+    font-size: 0.7rem;
+    padding: 0.3rem 0.75rem;
+    border-color: var(--colour-border);
+    color: var(--colour-text-muted);
+    letter-spacing: 0.1em;
+}
+
+.cancelButton:hover {
+    border-color: var(--colour-text-secondary);
+    color: var(--colour-text-secondary);
+}
+
+.error {
+    font-family: var(--font-ui);
+    font-size: 0.8rem;
+    color: var(--colour-danger);
+    margin-bottom: 1rem;
+}

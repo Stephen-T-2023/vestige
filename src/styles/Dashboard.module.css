@@ -164,3 +164,43 @@
     color: var(--colour-danger);
     margin-bottom: 1rem;
 }
+
+/* Delete confirmation row */
+.confirmRow {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.confirmText {
+    font-family: var(--font-ui);
+    font-size: 0.75rem;
+    color: var(--colour-danger);
+    letter-spacing: 0.05em;
+}
+
+.confirmButton {
+    font-size: 0.7rem;
+    padding: 0.3rem 0.75rem;
+    border-color: var(--colour-danger);
+    color: var(--colour-danger);
+    letter-spacing: 0.1em;
+}
+
+.confirmButton:hover {
+    background: var(--colour-danger);
+    color: var(--colour-bg-primary);
+}
+
+.cancelButton {
+    font-size: 0.7rem;
+    padding: 0.3rem 0.75rem;
+    border-color: var(--colour-border);
+    color: var(--colour-text-muted);
+    letter-spacing: 0.1em;
+}
+
+.cancelButton:hover {
+    border-color: var(--colour-text-secondary);
+    color: var(--colour-text-secondary);
+}

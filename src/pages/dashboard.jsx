@@ -1,9 +1,9 @@
 /* ============================================
-   dashboard.jsx
-   Vestige — Ashborne
-   Main dashboard — shows all subjects belonging
-   to the logged in user. Handles creating and
-   deleting subjects. Protected route.
+    dashboard.jsx
+    Vestige — Ashborne
+    Main dashboard — shows all subjects belonging
+    to the logged in user. Handles creating and
+    deleting subjects. Protected route.
    ============================================ */
 
 import { useEffect, useState } from 'react'
@@ -154,12 +154,11 @@ export default function Dashboard() {
                     >
                     {subject.name}
                     </button>
-                    <button
-                    className={styles.deleteButton}
-                    onClick={() => handleDeleteSubject(subject.id)}
-                    >
-                    Delete
-                    </button>
+                    {/* Delete with confirmation — prevents accidental deletion */}
+                    <SubjectDeleteButton
+                    subjectId={subject.id}
+                    onDelete={handleDeleteSubject}
+                    />
                 </li>
                 ))}
             </ul>
@@ -167,5 +166,48 @@ export default function Dashboard() {
 
         </main>
         </div>
+    )
+}
+
+/* ============================================
+    SubjectDeleteButton component
+    Handles delete confirmation for subjects.
+    First click prompts confirmation, second deletes.
+   ============================================ */
+function SubjectDeleteButton({ subjectId, onDelete }) {
+    const [confirming, setConfirming] = useState(false)
+
+    function handleClick() {
+        if (confirming) {
+        onDelete(subjectId)
+        } else {
+        setConfirming(true)
+        }
+    }
+
+    if (confirming) {
+        return (
+        <div className={styles.confirmRow}>
+            <span className={styles.confirmText}>Delete subject?</span>
+            <button className={styles.confirmButton} onClick={handleClick}>
+            Yes
+            </button>
+            <button
+            className={styles.cancelButton}
+            onClick={() => setConfirming(false)}
+            >
+            Cancel
+            </button>
+        </div>
+        )
+    }
+
+    return (
+        <button
+        className={styles.deleteButton}
+        onClick={handleClick}
+        >
+        Delete
+        </button>
     )
 }

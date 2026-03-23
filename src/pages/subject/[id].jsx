@@ -171,12 +171,11 @@ export default function SubjectPage() {
                     >
                     {topic.name}
                     </button>
-                    <button
-                    className={styles.deleteButton}
-                    onClick={() => handleDeleteTopic(topic.id)}
-                    >
-                    Delete
-                    </button>
+                    {/* Delete with confirmation — prevents accidental deletion */}
+                    <TopicDeleteButton
+                    topicId={topic.id}
+                    onDelete={handleDeleteTopic}
+                    />
                 </li>
                 ))}
             </ul>
@@ -184,5 +183,48 @@ export default function SubjectPage() {
 
         </main>
         </div>
+    )
+}
+
+/* ============================================
+    TopicDeleteButton component
+    Handles delete confirmation for topics.
+    First click prompts confirmation, second deletes.
+   ============================================ */
+function TopicDeleteButton({ topicId, onDelete }) {
+    const [confirming, setConfirming] = useState(false)
+
+    function handleClick() {
+        if (confirming) {
+        onDelete(topicId)
+        } else {
+        setConfirming(true)
+        }
+    }
+
+    if (confirming) {
+        return (
+        <div className={styles.confirmRow}>
+            <span className={styles.confirmText}>Delete topic?</span>
+            <button className={styles.confirmButton} onClick={handleClick}>
+            Yes
+            </button>
+            <button
+            className={styles.cancelButton}
+            onClick={() => setConfirming(false)}
+            >
+            Cancel
+            </button>
+        </div>
+        )
+    }
+
+    return (
+        <button
+        className={styles.deleteButton}
+        onClick={handleClick}
+        >
+        Delete
+        </button>
     )
 }
