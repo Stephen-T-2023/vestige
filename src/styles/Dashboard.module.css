@@ -204,3 +204,16 @@
     border-color: var(--colour-text-secondary);
     color: var(--colour-text-secondary);
 }
+
+.progressButton {
+    font-size: 0.75rem;
+    padding: 0.4rem 0.9rem;
+    letter-spacing: 0.1em;
+    border-color: var(--colour-accent);
+    color: var(--colour-accent);
+}
+
+.progressButton:hover {
+    background: var(--colour-accent);
+    color: var(--colour-bg-primary);
+}

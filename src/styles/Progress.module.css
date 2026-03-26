@@ -1,0 +1,183 @@
+/* ============================================
+    Progress.module.css
+    Vestige — Ashborne
+    Styles for the progress dashboard page
+   ============================================ */
+
+.container {
+    min-height: 100vh;
+    background: var(--colour-bg-primary);
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 2rem;
+    border-bottom: 1px solid var(--colour-border);
+    background: var(--colour-bg-card);
+}
+
+.logo {
+    font-size: 1.5rem;
+    color: var(--colour-accent);
+    letter-spacing: 0.1em;
+}
+
+.backButton {
+    font-size: 0.75rem;
+    padding: 0.4rem 0.9rem;
+    letter-spacing: 0.1em;
+}
+
+.main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2.5rem 2rem;
+}
+
+.pageHeader {
+    margin-bottom: 2rem;
+}
+
+.pageHeader h2 {
+    margin-bottom: 0.25rem;
+}
+
+.pageHeader p {
+    margin-bottom: 0;
+}
+
+.emptyState {
+    padding: 3rem 0;
+    text-align: center;
+    border: 1px dashed var(--colour-border);
+    border-radius: var(--radius-lg);
+}
+
+.emptyState p {
+    color: var(--colour-text-muted);
+    font-family: var(--font-ui);
+    font-size: 0.875rem;
+    margin-bottom: 0;
+}
+
+/* Stats list */
+.statsList {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.statItem {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    background: var(--colour-bg-card);
+    border: 1px solid var(--colour-border);
+    border-radius: var(--radius-md);
+    padding: 1rem 1.25rem;
+    transition: border-color var(--transition-fast);
+    position: relative;
+}
+
+/* Weak topics highlighted with danger border */
+.statItem.weak {
+    border-color: var(--colour-danger);
+}
+
+.topicInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 180px;
+}
+
+.subjectName {
+    font-family: var(--font-ui);
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--colour-text-muted);
+}
+
+.topicName {
+    font-family: var(--font-primary);
+    font-size: 1rem;
+    color: var(--colour-text-primary);
+}
+
+.statRight {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex: 1;
+}
+
+/* Progress bar track */
+.barWrap {
+    flex: 1;
+    height: 4px;
+    background: var(--colour-border);
+    border-radius: 99px;
+    overflow: hidden;
+}
+
+/* Progress bar fill — width set inline from percentage */
+.barFill {
+    height: 100%;
+    background: var(--colour-accent);
+    border-radius: 99px;
+    transition: width var(--transition-base);
+}
+
+.percentage {
+    font-family: var(--font-ui);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--colour-text-primary);
+    min-width: 40px;
+    text-align: right;
+}
+
+.sessionCount {
+    font-family: var(--font-ui);
+    font-size: 0.7rem;
+    color: var(--colour-text-muted);
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+}
+
+/* Weak topic badge */
+.weakBadge {
+    font-family: var(--font-ui);
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--colour-danger);
+    border: 1px solid var(--colour-danger);
+    border-radius: var(--radius-sm);
+    padding: 0.2rem 0.5rem;
+    white-space: nowrap;
+}
+
+/* Link to navigate directly to the topic from progress */
+.goToTopic {
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: var(--font-ui);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    color: var(--colour-accent);
+    cursor: pointer;
+    text-transform: none;
+    text-align: left;
+    margin-top: 0.25rem;
+}
+
+.goToTopic:hover {
+    color: var(--colour-accent-hover);
+    border: none;
+}

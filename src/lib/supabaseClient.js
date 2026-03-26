@@ -1,9 +1,9 @@
 /* ============================================
-    supabaseClient.js
-    Vestige — Ashborne
-    Initialises and exports a single Supabase client
-    instance to be imported anywhere in the app
-    that needs to talk to the database or auth
+   supabaseClient.js
+   Vestige — Ashborne
+   Initialises and exports a single Supabase client
+   instance to be imported anywhere in the app
+   that needs to talk to the database or auth
    ============================================ */
 
 import { createClient } from '@supabase/supabase-js'

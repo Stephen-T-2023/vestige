@@ -104,6 +104,12 @@ export default function Dashboard() {
         <header className={styles.header}>
             <h1 className={styles.logo}>Vestige</h1>
             <div className={styles.headerRight}>
+            <button
+            className={styles.progressButton}
+            onClick={() => router.push('/progress')}
+            >
+                Progress
+            </button>
             <span className={styles.email}>{user.email}</span>
             <button onClick={handleLogout} className={styles.logoutButton}>
                 Sign out

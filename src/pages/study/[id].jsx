@@ -25,6 +25,8 @@ export default function StudyPage() {
     const [finished, setFinished] = useState(false)
     const [loading, setLoading] = useState(true)
 
+    const [user, setUser] = useState(null)
+
     /* Fetch the topic name and all its flashcards */
     async function fetchStudyData() {
         const { data: topicData, error: topicError } = await supabase
@@ -48,11 +50,34 @@ export default function StudyPage() {
         setCards(cardData)
     }
 
+    /* Save the completed session results to Supabase.
+     Called automatically when the user finishes the deck. */
+    async function saveSession(finalCorrect, finalIncorrect) {
+        if (!user) return
+
+        await supabase
+        .from('study_sessions')
+        .insert([{
+            user_id: user.id,
+            topic_id: id,
+            correct: finalCorrect,
+            incorrect: finalIncorrect,
+        }])
+    }
+
     useEffect(() => {
         if (!id) return
 
         async function init() {
         const { data: { session } } = await supabase.auth.getSession()
+        
+        if (!session) {
+            router.push('/login')
+        } else {
+            setUser(session.user)
+            await fetchStudyData()
+            setLoading(false)
+        }
 
         if (!session) {
             router.push('/login')
@@ -67,21 +92,26 @@ export default function StudyPage() {
     }, [id, router])
 
     /* Mark current card as correct and advance */
-    function handleCorrect() {
-        setCorrect(c => c + 1)
-        advance()
+    async function handleCorrect() {
+        const newCorrect = correct + 1
+        setCorrect(newCorrect)
+        await advance(newCorrect, incorrect)
     }
 
     /* Mark current card as incorrect and advance */
-    function handleIncorrect() {
-        setIncorrect(i => i + 1)
-        advance()
+    async function handleIncorrect() {
+        const newIncorrect = incorrect + 1
+        setIncorrect(newIncorrect)
+        await advance(correct, newIncorrect)
     }
 
-    /* Move to the next card or end the session
-        if we've reached the last card */
-    function advance() {
+    /* Move to the next card or end the session.
+        Receives the up to date counts directly rather
+        than reading from state which may not have
+        resolved yet on the final card */
+    async function advance(finalCorrect, finalIncorrect) {
         if (currentIndex + 1 >= cards.length) {
+        await saveSession(finalCorrect, finalIncorrect)
         setFinished(true)
         } else {
         setCurrentIndex(currentIndex + 1)
