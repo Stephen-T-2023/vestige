@@ -9,41 +9,6 @@
     background: var(--colour-bg-primary);
 }
 
-/* Top navigation bar */
-.header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1.25rem 2rem;
-    border-bottom: 1px solid var(--colour-border);
-    background: var(--colour-bg-card);
-}
-
-.logo {
-    font-size: 1.5rem;
-    color: var(--colour-accent);
-    letter-spacing: 0.1em;
-}
-
-.headerRight {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-}
-
-.email {
-    font-family: var(--font-ui);
-    font-size: 0.75rem;
-    color: var(--colour-text-muted);
-    letter-spacing: 0.05em;
-}
-
-.logoutButton {
-    font-size: 0.75rem;
-    padding: 0.4rem 0.9rem;
-    letter-spacing: 0.1em;
-}
-
 /* Main content area */
 .main {
     max-width: 900px;
@@ -216,4 +181,70 @@
 .progressButton:hover {
     background: var(--colour-accent);
     color: var(--colour-bg-primary);
+}
+
+/* Row actions — edit and delete buttons together */
+.rowActions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Edit button */
+.editButton {
+    font-size: 0.7rem;
+    padding: 0.3rem 0.75rem;
+    color: var(--colour-text-muted);
+    border-color: var(--colour-border);
+    letter-spacing: 0.1em;
+}
+
+.editButton:hover {
+    border-color: var(--colour-accent);
+    color: var(--colour-accent);
+}
+
+/* Inline edit form */
+.inlineEditForm {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+}
+
+.inlineEditInput {
+    flex: 1;
+    font-family: var(--font-primary);
+    font-size: 1rem;
+    padding: 0.3rem 0.5rem;
+}
+
+/* Save button in inline edit */
+.saveButton {
+    font-size: 0.7rem;
+    padding: 0.3rem 0.75rem;
+    border-color: var(--colour-success);
+    color: var(--colour-success);
+    letter-spacing: 0.1em;
+}
+
+.saveButton:hover {
+    background: var(--colour-success);
+    color: var(--colour-bg-primary);
+}
+
+@media (max-width: 768px) {
+    .main {
+        padding: 1.5rem 1rem;
+    }
+
+    .createForm {
+        flex-direction: column;
+    }
+
+    .subjectItem {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
 }

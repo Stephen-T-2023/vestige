@@ -1,0 +1,196 @@
+/* ============================================
+    Navbar.module.css
+    Vestige — Ashborne
+    Global top navigation bar styles
+   ============================================ */
+
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+    height: 56px;
+    background: var(--colour-bg-card);
+    border-bottom: 1px solid var(--colour-border);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+}
+
+/* Logo acts as a home button */
+.logo {
+    font-family: var(--font-primary);
+    font-size: 1.5rem;
+    color: var(--colour-accent);
+    letter-spacing: 0.1em;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    text-transform: none;
+    letter-spacing: 0.1em;
+}
+
+.logo:hover {
+    border: none;
+    color: var(--colour-accent-hover);
+}
+
+/* Search bar centred in the navbar */
+.center {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    padding: 0 2rem;
+}
+
+/* Right side — progress, email, logout */
+.right {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+}
+
+.navLink {
+    background: none;
+    border: 1px solid var(--colour-border);
+    padding: 0.4rem 0.9rem;
+    font-family: var(--font-ui);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--colour-text-secondary);
+    cursor: pointer;
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+}
+
+.navLink:hover {
+    border-color: var(--colour-accent);
+    color: var(--colour-accent);
+}
+
+.email {
+    font-family: var(--font-ui);
+    font-size: 0.75rem;
+    color: var(--colour-text-muted);
+    letter-spacing: 0.05em;
+}
+
+.logoutButton {
+    font-size: 0.75rem;
+    padding: 0.4rem 0.9rem;
+    letter-spacing: 0.1em;
+}
+
+/* Dark mode toggle button */
+.themeToggle {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 1rem;
+    cursor: pointer;
+    color: var(--colour-text-secondary);
+    line-height: 1;
+    letter-spacing: 0;
+    text-transform: none;
+    position: relative;
+}
+
+.themeToggle:hover {
+    border: none;
+    color: var(--colour-accent);
+}
+
+/* Tooltip shown on hover */
+.themeToggle::after {
+    content: 'Toggle theme';
+    position: absolute;
+    bottom: -2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--colour-bg-card);
+    border: 1px solid var(--colour-border);
+    color: var(--colour-text-secondary);
+    font-family: var(--font-ui);
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-sm);
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--transition-fast);
+}
+
+.themeToggle:hover::after {
+    opacity: 1;
+}
+
+@media (max-width: 768px) {
+    .navbar {
+        padding: 0 1rem;
+        gap: 0.75rem;
+    }
+
+    /* Hide email on mobile — too long */
+    .email {
+        display: none;
+    }
+
+    /* Shrink search bar on mobile */
+    .center {
+        padding: 0 0.5rem;
+    }
+}
+
+/* Breadcrumb trail */
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0 1rem;
+}
+
+.breadcrumbItem {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.breadcrumbSep {
+    color: var(--colour-text-muted);
+    font-size: 0.75rem;
+}
+
+.breadcrumbLink {
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: var(--font-ui);
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    color: var(--colour-text-muted);
+    cursor: pointer;
+    text-transform: none;
+}
+
+.breadcrumbLink:hover {
+    color: var(--colour-accent);
+    border: none;
+}
+
+/* Current page — no link, slightly more prominent */
+.breadcrumbCurrent {
+    font-family: var(--font-ui);
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    color: var(--colour-text-secondary);
+}
+
+@media (max-width: 768px) {
+    .breadcrumb {
+        display: none;
+    }
+}

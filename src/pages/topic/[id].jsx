@@ -1,40 +1,53 @@
 /* ============================================
     topic/[id].jsx
     Vestige — Ashborne
-    Topic detail page — shows all flashcards belonging
-    to a topic. Handles creating and deleting flashcards.
+    Topic detail page — sidebar layout with four
+    sections: Notes, Flashcards, Questions, Study.
+    All data is fetched on mount and sections are
+    switched via the sidebar without page navigation.
    ============================================ */
 
 import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/router'
 import supabase from '../../lib/supabaseClient'
+import EmptyState from '../../components/EmptyState'
+import { useBreadcrumb } from '../../lib/BreadcrumbContext'
 import styles from '../../styles/Topic.module.css'
+import toast from 'react-hot-toast'
 
 export default function TopicPage() {
     const router = useRouter()
     const { id } = router.query
+    const { setCrumbs } = useBreadcrumb()
 
     const [topic, setTopic] = useState(null)
-    const [subject, setSubject] = useState(null)
     const [flashcards, setFlashcards] = useState([])
-    const [front, setFront] = useState('')
-    const [back, setBack] = useState('')
-    const [loading, setLoading] = useState(true)
-    const [creating, setCreating] = useState(false)
-    const [error, setError] = useState(null)
-
     const [note, setNote] = useState('')
     const [noteId, setNoteId] = useState(null)
-    const [saving, setSaving] = useState(false)
-    const [saveStatus, setSaveStatus] = useState(null)
-
     const [questions, setQuestions] = useState([])
+    const [front, setFront] = useState('')
+    const [back, setBack] = useState('')
     const [newQuestion, setNewQuestion] = useState('')
     const [newAnswer, setNewAnswer] = useState('')
+    const [loading, setLoading] = useState(true)
+    const [creating, setCreating] = useState(false)
     const [creatingQuestion, setCreatingQuestion] = useState(false)
+    const [saving, setSaving] = useState(false)
+    const [saveStatus, setSaveStatus] = useState(null)
+    const [error, setError] = useState(null)
+    const [activeSection, setActiveSection] = useState('notes')
+    const saveTimeout = useRef(null)
 
-    /* Fetch the topic and its parent subject for
-        display and breadcrumb navigation */
+    /* Update breadcrumb when topic loads */
+    useEffect(() => {
+        if (!topic) return
+        setCrumbs([
+        { label: 'Dashboard', href: '/dashboard' },
+        { label: topic.subjects?.name, href: `/subject/${topic.subjects?.id}` },
+        { label: topic.name }
+        ])
+    }, [topic, setCrumbs])
+
     async function fetchTopic() {
         const { data, error } = await supabase
         .from('topics')
@@ -46,11 +59,9 @@ export default function TopicPage() {
         setError(error.message)
         } else {
         setTopic(data)
-        setSubject(data.subjects)
         }
     }
 
-    /* Fetch all flashcards belonging to this topic */
     async function fetchFlashcards() {
         const { data, error } = await supabase
         .from('flashcards')
@@ -59,16 +70,16 @@ export default function TopicPage() {
         .order('created_at', { ascending: true })
 
         if (error) {
-        setError(error.message)
+        const cached = localStorage.getItem(`vestige-flashcards-${id}`)
+        if (cached) setFlashcards(JSON.parse(cached))
         } else {
         setFlashcards(data)
+        localStorage.setItem(`vestige-flashcards-${id}`, JSON.stringify(data))
         }
     }
 
-    /* Fetch the note for this topic if one exists.
-     Each topic has at most one note document. */
     async function fetchNote() {
-        const { data, error } = await supabase
+        const { data } = await supabase
         .from('notes')
         .select('*')
         .eq('topic_id', id)
@@ -80,7 +91,6 @@ export default function TopicPage() {
         }
     }
 
-    /* Fetch all practice questions for this topic */
     async function fetchQuestions() {
         const { data, error } = await supabase
         .from('questions')
@@ -95,18 +105,37 @@ export default function TopicPage() {
         }
     }
 
-    /* Debounce ref — stores the timeout between keystrokes
-     so we only save once the user stops typing */
-    const saveTimeout = useRef(null)
+    useEffect(() => {
+        if (!id) return
 
-    /* Called every time the note content changes.
-        Waits 1 second after the last keystroke then saves. */
+        async function init() {
+        const { data: { session } } = await supabase.auth.getSession()
+
+        if (!session) {
+            router.push('/login')
+        } else {
+            const cached = localStorage.getItem(`vestige-flashcards-${id}`)
+            if (cached) {
+            setFlashcards(JSON.parse(cached))
+            setLoading(false)
+            }
+
+            await fetchTopic()
+            await fetchFlashcards()
+            await fetchNote()
+            await fetchQuestions()
+            setLoading(false)
+        }
+        }
+
+        init()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [id, router])
+
+    /* Auto save notes with 1 second debounce */
     async function handleNoteChange(value) {
         setNote(value)
         setSaveStatus('typing...')
-
-        /* Clear any existing timeout so the timer resets
-        each time the user types another character */
         clearTimeout(saveTimeout.current)
 
         saveTimeout.current = setTimeout(async () => {
@@ -114,7 +143,6 @@ export default function TopicPage() {
         setSaveStatus('saving...')
 
         if (noteId) {
-            /* Note already exists — update it */
             const { error } = await supabase
             .from('notes')
             .update({ content: value, updated_at: new Date().toISOString() })
@@ -123,7 +151,6 @@ export default function TopicPage() {
             if (error) setSaveStatus('error saving')
             else setSaveStatus('saved')
         } else {
-            /* No note yet — create one for this topic */
             const { data, error } = await supabase
             .from('notes')
             .insert([{ topic_id: id, content: value }])
@@ -141,28 +168,6 @@ export default function TopicPage() {
         }, 1000)
     }
 
-    useEffect(() => {
-        if (!id) return
-
-        async function init() {
-        const { data: { session } } = await supabase.auth.getSession()
-
-        if (!session) {
-            router.push('/login')
-        } else {
-            await fetchTopic()
-            await fetchFlashcards()
-            await fetchNote()
-            await fetchQuestions()
-            setLoading(false)
-        }
-        }
-
-        init()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [id, router])
-
-    /* Create a new flashcard under this topic */
     async function handleCreateFlashcard(e) {
         e.preventDefault()
         if (!front.trim() || !back.trim()) return
@@ -175,16 +180,17 @@ export default function TopicPage() {
 
         if (error) {
         setError(error.message)
+        toast.error('Failed to create flashcard')
         } else {
         setFlashcards([...flashcards, data[0]])
         setFront('')
         setBack('')
+        toast.success('Flashcard created')
         }
 
         setCreating(false)
     }
 
-    /* Delete a flashcard by its id */
     async function handleDeleteFlashcard(flashcardId) {
         const { error } = await supabase
         .from('flashcards')
@@ -192,13 +198,29 @@ export default function TopicPage() {
         .eq('id', flashcardId)
 
         if (error) {
-        setError(error.message)
+        toast.error('Failed to delete flashcard')
         } else {
         setFlashcards(flashcards.filter(f => f.id !== flashcardId))
+        toast.success('Flashcard deleted')
         }
     }
 
-    /* Create a new practice question under this topic */
+    async function handleEditFlashcard(id, newFront, newBack) {
+        const { error } = await supabase
+        .from('flashcards')
+        .update({ front: newFront, back: newBack })
+        .eq('id', id)
+
+        if (error) {
+        toast.error('Failed to update flashcard')
+        } else {
+        setFlashcards(flashcards.map(f =>
+            f.id === id ? { ...f, front: newFront, back: newBack } : f
+        ))
+        toast.success('Flashcard updated')
+        }
+    }
+
     async function handleCreateQuestion(e) {
         e.preventDefault()
         if (!newQuestion.trim() || !newAnswer.trim()) return
@@ -214,17 +236,17 @@ export default function TopicPage() {
         .select()
 
         if (error) {
-        setError(error.message)
+        toast.error('Failed to create question')
         } else {
         setQuestions([...questions, data[0]])
         setNewQuestion('')
         setNewAnswer('')
+        toast.success('Question created')
         }
 
         setCreatingQuestion(false)
     }
 
-    /* Delete a question by its id */
     async function handleDeleteQuestion(questionId) {
         const { error } = await supabase
         .from('questions')
@@ -232,117 +254,164 @@ export default function TopicPage() {
         .eq('id', questionId)
 
         if (error) {
-        setError(error.message)
+        toast.error('Failed to delete question')
         } else {
         setQuestions(questions.filter(q => q.id !== questionId))
+        toast.success('Question deleted')
         }
     }
 
-    if (loading) return null
+    async function handleEditQuestion(id, newQuestion, newAnswer) {
+        const { error } = await supabase
+        .from('questions')
+        .update({ question_text: newQuestion, answer_text: newAnswer })
+        .eq('id', id)
+
+        if (error) {
+        toast.error('Failed to update question')
+        } else {
+        setQuestions(questions.map(q =>
+            q.id === id ? { ...q, question_text: newQuestion, answer_text: newAnswer } : q
+        ))
+        toast.success('Question updated')
+        }
+    }
+
+    if (loading) return (
+        <div style={{ maxWidth: 900, margin: '0 auto', padding: '2.5rem 2rem' }}>
+        <div style={{ marginBottom: '0.5rem' }}>
+            <div style={{ height: '1.5rem', width: '180px', background: 'var(--colour-bg-secondary)', borderRadius: '4px' }} />
+        </div>
+        </div>
+    )
 
     return (
-        <div className={styles.container}>
-        <header className={styles.header}>
-            <h1 className={styles.logo}>Vestige</h1>
-            <div className={styles.headerRight}>
-            {/* Breadcrumb — Dashboard > Subject > Topic */}
-            <nav className={styles.breadcrumb}>
-                <button onClick={() => router.push('/dashboard')}>Dashboard</button>
-                <span>›</span>
-                <button onClick={() => router.push(`/subject/${subject?.id}`)}>
-                {subject?.name}
-                </button>
-                <span>›</span>
-                <span>{topic?.name}</span>
-            </nav>
-            </div>
-        </header>
+        <div className={styles.layout}>
 
+        {/* Sidebar navigation */}
+        <aside className={styles.sidebar}>
+            <div className={styles.sidebarTopic}>
+            <span className={styles.sidebarTopicLabel}>Topic</span>
+            <span className={styles.sidebarTopicName}>{topic?.name}</span>
+            </div>
+
+            <nav className={styles.sidebarNav}>
+            {/* Notes section link */}
+            <button
+                className={`${styles.sidebarLink} ${activeSection === 'notes' ? styles.sidebarLinkActive : ''}`}
+                onClick={() => setActiveSection('notes')}
+            >
+                <span>Notes</span>
+                {saveStatus === 'saved' && activeSection === 'notes' && (
+                <span className={styles.savedDot} />
+                )}
+            </button>
+
+            {/* Flashcards section link */}
+            <button
+                className={`${styles.sidebarLink} ${activeSection === 'flashcards' ? styles.sidebarLinkActive : ''}`}
+                onClick={() => setActiveSection('flashcards')}
+            >
+                <span>Flashcards</span>
+                <span className={styles.sidebarCount}>{flashcards.length}</span>
+            </button>
+
+            {/* Questions section link */}
+            <button
+                className={`${styles.sidebarLink} ${activeSection === 'questions' ? styles.sidebarLinkActive : ''}`}
+                onClick={() => setActiveSection('questions')}
+            >
+                <span>Questions</span>
+                <span className={styles.sidebarCount}>{questions.length}</span>
+            </button>
+
+            {/* Study — navigates to study page */}
+            <button
+                className={`${styles.sidebarLink} ${styles.sidebarStudyLink} ${flashcards.length === 0 ? styles.sidebarLinkDisabled : ''}`}
+                onClick={() => flashcards.length > 0 && router.push(`/study/${id}`)}
+                title={flashcards.length === 0 ? 'Add flashcards to study' : ''}
+            >
+                <span>Study →</span>
+                {flashcards.length > 0 && (
+                <span className={styles.sidebarCount}>{flashcards.length} cards</span>
+                )}
+            </button>
+            </nav>
+        </aside>
+
+        {/* Main content area */}
         <main className={styles.main}>
 
-            <div className={styles.pageHeader}>
-            <h2>{topic?.name}</h2>
-            <p>{flashcards.length} {flashcards.length === 1 ? 'card' : 'cards'}</p>
-            </div>
-
-            {/* Notes editor — auto saves as the user types */}
-            <div className={styles.notesSection}>
-            <div className={styles.notesSectionHeader}>
-                <h3>Notes</h3>
-                {/* Save status indicator */}
+            {/* Notes section */}
+            {activeSection === 'notes' && (
+            <div className={styles.section}>
+                <div className={styles.sectionHeader}>
+                <h2>Notes</h2>
                 {saveStatus && (
-                <span className={styles.saveStatus}>{saveStatus}</span>
+                    <span className={styles.saveStatus}>{saveStatus}</span>
                 )}
-            </div>
-            <textarea
+                </div>
+                <textarea
                 className={styles.notesEditor}
                 placeholder="Write your notes for this topic here..."
                 value={note}
                 onChange={(e) => handleNoteChange(e.target.value)}
-                rows={8}
-            />
+                rows={16}
+                />
             </div>
-
-            {/* Study mode button — only shown if there are cards to study */}
-            {flashcards.length > 0 && (
-            <button
-                className={styles.studyButton}
-                onClick={() => router.push(`/study/${id}`)}
-            >
-                Study this topic →
-            </button>
             )}
 
-            {/* Add flashcard form */}
-            <form onSubmit={handleCreateFlashcard} className={styles.createForm}>
-            <h3>Add a flashcard</h3>
-            <div className={styles.cardInputs}>
-                <div className={styles.field}>
-                <label htmlFor="front">Front</label>
-                <textarea
-                    id="front"
-                    placeholder="Question or term..."
-                    value={front}
-                    onChange={(e) => setFront(e.target.value)}
-                    rows={3}
-                    required
-                />
+            {/* Flashcards section */}
+            {activeSection === 'flashcards' && (
+            <div className={styles.section}>
+                <div className={styles.sectionHeader}>
+                <h2>Flashcards</h2>
+                <span className={styles.sectionCount}>
+                    {flashcards.length} {flashcards.length === 1 ? 'card' : 'cards'}
+                </span>
                 </div>
-                <div className={styles.field}>
-                <label htmlFor="back">Back</label>
-                <textarea
-                    id="back"
-                    placeholder="Answer or definition..."
-                    value={back}
-                    onChange={(e) => setBack(e.target.value)}
-                    rows={3}
-                    required
-                />
+
+                <form onSubmit={handleCreateFlashcard} className={styles.createForm}>
+                <div className={styles.cardInputs}>
+                    <div className={styles.field}>
+                    <label htmlFor="front">Front</label>
+                    <textarea
+                        id="front"
+                        placeholder="Question or term..."
+                        value={front}
+                        onChange={(e) => setFront(e.target.value)}
+                        rows={3}
+                        required
+                    />
+                    </div>
+                    <div className={styles.field}>
+                    <label htmlFor="back">Back</label>
+                    <textarea
+                        id="back"
+                        placeholder="Answer or definition..."
+                        value={back}
+                        onChange={(e) => setBack(e.target.value)}
+                        rows={3}
+                        required
+                    />
+                    </div>
                 </div>
-            </div>
-            <button
-                type="submit"
-                disabled={creating}
-                className={styles.createButton}
-            >
-                {creating ? 'Adding...' : 'Add Flashcard'}
-            </button>
-            </form>
+                <button
+                    type="submit"
+                    disabled={creating}
+                    className={styles.createButton}
+                >
+                    {creating ? 'Adding...' : 'Add Flashcard'}
+                </button>
+                </form>
 
-            {error && <p className={styles.error}>{error}</p>}
+                {error && <p className={styles.error}>{error}</p>}
 
-            {/* Flashcards list */}
-            {flashcards.length === 0 ? (
-            <div className={styles.emptyState}>
-                <p>No flashcards yet. Add one above to get started.</p>
-            </div>
-            ) : (
-            <ul className={styles.flashcardList}>
-                {/* Flashcards list — each card expands on click */}
                 {flashcards.length === 0 ? (
-                <div className={styles.emptyState}>
-                    <p>No flashcards yet. Add one above to get started.</p>
-                </div>
+                <EmptyState
+                    message="No flashcards yet"
+                    hint="Add a flashcard above to get started"
+                />
                 ) : (
                 <ul className={styles.flashcardList}>
                     {flashcards.map(card => (
@@ -350,76 +419,77 @@ export default function TopicPage() {
                         key={card.id}
                         card={card}
                         onDelete={handleDeleteFlashcard}
+                        onEdit={handleEditFlashcard}
                     />
                     ))}
                 </ul>
                 )}
-            </ul>
+            </div>
             )}
 
-            {/* Practice questions section */}
-            <div className={styles.questionsSection}>
-
-            <div className={styles.questionsSectionHeader}>
-                <h3>Practice Questions</h3>
-                <span className={styles.questionCount}>
-                {questions.length} {questions.length === 1 ? 'question' : 'questions'}
+            {/* Questions section */}
+            {activeSection === 'questions' && (
+            <div className={styles.section}>
+                <div className={styles.sectionHeader}>
+                <h2>Practice Questions</h2>
+                <span className={styles.sectionCount}>
+                    {questions.length} {questions.length === 1 ? 'question' : 'questions'}
                 </span>
-            </div>
+                </div>
 
-            {/* Add question form */}
-            <form onSubmit={handleCreateQuestion} className={styles.createForm}>
+                <form onSubmit={handleCreateQuestion} className={styles.createForm}>
                 <div className={styles.cardInputs}>
-                <div className={styles.field}>
+                    <div className={styles.field}>
                     <label htmlFor="question">Question</label>
                     <textarea
-                    id="question"
-                    placeholder="Write your question here..."
-                    value={newQuestion}
-                    onChange={(e) => setNewQuestion(e.target.value)}
-                    rows={3}
-                    required
+                        id="question"
+                        placeholder="Write your question here..."
+                        value={newQuestion}
+                        onChange={(e) => setNewQuestion(e.target.value)}
+                        rows={3}
+                        required
                     />
-                </div>
-                <div className={styles.field}>
+                    </div>
+                    <div className={styles.field}>
                     <label htmlFor="answer">Answer</label>
                     <textarea
-                    id="answer"
-                    placeholder="Write the answer here..."
-                    value={newAnswer}
-                    onChange={(e) => setNewAnswer(e.target.value)}
-                    rows={3}
-                    required
+                        id="answer"
+                        placeholder="Write the answer here..."
+                        value={newAnswer}
+                        onChange={(e) => setNewAnswer(e.target.value)}
+                        rows={3}
+                        required
                     />
-                </div>
+                    </div>
                 </div>
                 <button
-                type="submit"
-                disabled={creatingQuestion}
-                className={styles.createButton}
+                    type="submit"
+                    disabled={creatingQuestion}
+                    className={styles.createButton}
                 >
-                {creatingQuestion ? 'Adding...' : 'Add Question'}
+                    {creatingQuestion ? 'Adding...' : 'Add Question'}
                 </button>
-            </form>
+                </form>
 
-            {/* Questions list */}
-            {questions.length === 0 ? (
-                <div className={styles.emptyState}>
-                <p>No practice questions yet. Add one above.</p>
-                </div>
-            ) : (
+                {questions.length === 0 ? (
+                <EmptyState
+                    message="No practice questions yet"
+                    hint="Add a question above to get started"
+                />
+                ) : (
                 <ul className={styles.questionList}>
-                {questions.map(q => (
+                    {questions.map(q => (
                     <QuestionRow
-                    key={q.id}
-                    question={q}
-                    onDelete={handleDeleteQuestion}
+                        key={q.id}
+                        question={q}
+                        onDelete={handleDeleteQuestion}
+                        onEdit={handleEditQuestion}
                     />
-                ))}
+                    ))}
                 </ul>
-            )}
-
+                )}
             </div>
+            )}
 
         </main>
         </div>
@@ -429,13 +499,15 @@ export default function TopicPage() {
 /* ============================================
     FlashcardRow component
     Renders a single flashcard in the list as a
-    collapsible row. Clicking the front reveals
-    the back with an expand/collapse animation.
-    Delete requires confirmation.
+    collapsible row. Supports inline editing of
+    front and back. Delete requires confirmation.
    ============================================ */
-function FlashcardRow({ card, onDelete }) {
+function FlashcardRow({ card, onDelete, onEdit }) {
     const [expanded, setExpanded] = useState(false)
     const [confirming, setConfirming] = useState(false)
+    const [editing, setEditing] = useState(false)
+    const [editFront, setEditFront] = useState(card.front)
+    const [editBack, setEditBack] = useState(card.back)
     const backRef = useRef(null)
 
     function handleToggle() {
@@ -443,7 +515,6 @@ function FlashcardRow({ card, onDelete }) {
         if (!el) return
 
         if (!expanded) {
-        /* Opening — animate from 0 to natural height */
         el.style.transition = 'none'
         el.style.height = '0px'
         el.style.opacity = '0'
@@ -456,7 +527,6 @@ function FlashcardRow({ card, onDelete }) {
         }, 350)
         setExpanded(true)
         } else {
-        /* Closing — lock height first then animate to 0 */
         el.style.height = el.scrollHeight + 'px'
         el.getBoundingClientRect()
         el.style.transition = 'height 0.35s ease, opacity 0.35s ease'
@@ -464,6 +534,19 @@ function FlashcardRow({ card, onDelete }) {
         el.style.opacity = '0'
         setExpanded(false)
         }
+    }
+
+    function handleEditSubmit(e) {
+        e.preventDefault()
+        if (!editFront.trim() || !editBack.trim()) return
+        onEdit(card.id, editFront.trim(), editBack.trim())
+        setEditing(false)
+    }
+
+    function handleEditCancel() {
+        setEditFront(card.front)
+        setEditBack(card.back)
+        setEditing(false)
     }
 
     function handleDeleteClick() {
@@ -476,49 +559,94 @@ function FlashcardRow({ card, onDelete }) {
 
     return (
         <li className={styles.flashcardItem}>
-        <button
-        className={styles.flashcardToggle}
-        onClick={handleToggle}
-        >
-            {/* Stacked label and front text */}
-            <div className={styles.cardFrontWrapper}>
-            <span className={styles.cardFrontLabel}>Front</span>
-            <span className={styles.cardFront}>{card.front}</span>
+        {editing ? (
+            /* Inline edit form for front and back */
+            <form onSubmit={handleEditSubmit} className={styles.flashcardEditForm}>
+            <div className={styles.cardInputs}>
+                <div className={styles.field}>
+                <label>Front</label>
+                <textarea
+                    value={editFront}
+                    onChange={(e) => setEditFront(e.target.value)}
+                    rows={3}
+                    autoFocus
+                />
+                </div>
+                <div className={styles.field}>
+                <label>Back</label>
+                <textarea
+                    value={editBack}
+                    onChange={(e) => setEditBack(e.target.value)}
+                    rows={3}
+                />
+                </div>
             </div>
-            <span className={styles.toggleIcon}>{expanded ? '▲' : '▼'}</span>
-        </button>
-
-        {/* Always mounted — hidden via height 0 when closed
-            so we can animate in both directions cleanly */}
-        <div
-            ref={backRef}
-            className={styles.cardBack}
-            style={{ height: 0, opacity: 0, overflow: 'hidden' }}
-        >
-            <span className={styles.sideLabel}>Back</span>
-            <p>{card.back}</p>
-        </div>
-
-        <div className={styles.cardActions}>
-            {confirming ? (
-            <>
-                <span className={styles.confirmText}>Delete this card?</span>
-                <button className={styles.confirmButton} onClick={handleDeleteClick}>
-                Yes, delete
-                </button>
+            <div className={styles.editFormActions}>
+                <button type="submit" className={styles.saveButton}>Save</button>
                 <button
+                type="button"
                 className={styles.cancelButton}
-                onClick={() => setConfirming(false)}
+                onClick={handleEditCancel}
                 >
                 Cancel
                 </button>
-            </>
-            ) : (
-            <button className={styles.deleteButton} onClick={handleDeleteClick}>
-                Delete
+            </div>
+            </form>
+        ) : (
+            <>
+            <button
+                className={styles.flashcardToggle}
+                onClick={handleToggle}
+            >
+                <div className={styles.cardFrontWrapper}>
+                <span className={styles.cardFrontLabel}>Front</span>
+                <span className={styles.cardFront}>{card.front}</span>
+                </div>
+                <span className={styles.toggleIcon}>{expanded ? '▲' : '▼'}</span>
             </button>
-            )}
-        </div>
+
+            <div
+                ref={backRef}
+                className={styles.cardBack}
+                style={{ height: 0, opacity: 0, overflow: 'hidden' }}
+            >
+                <span className={styles.sideLabel}>Back</span>
+                <p>{card.back}</p>
+            </div>
+
+            <div className={styles.cardActions}>
+                {confirming ? (
+                <>
+                    <span className={styles.confirmText}>Delete this card?</span>
+                    <button className={styles.confirmButton} onClick={handleDeleteClick}>
+                    Yes, delete
+                    </button>
+                    <button
+                    className={styles.cancelButton}
+                    onClick={() => setConfirming(false)}
+                    >
+                    Cancel
+                    </button>
+                </>
+                ) : (
+                <>
+                    <button
+                    className={styles.editButton}
+                    onClick={() => setEditing(true)}
+                    >
+                    Edit
+                    </button>
+                    <button
+                    className={styles.deleteButton}
+                    onClick={handleDeleteClick}
+                    >
+                    Delete
+                    </button>
+                </>
+                )}
+            </div>
+            </>
+        )}
         </li>
     )
 }
@@ -527,11 +655,14 @@ function FlashcardRow({ card, onDelete }) {
     QuestionRow component
     Renders a single practice question. Answer
     is hidden by default and revealed on click.
-    Delete requires confirmation.
+    Supports inline editing. Delete requires confirmation.
    ============================================ */
-function QuestionRow({ question, onDelete }) {
+function QuestionRow({ question, onDelete, onEdit }) {
     const [revealed, setRevealed] = useState(false)
     const [confirming, setConfirming] = useState(false)
+    const [editing, setEditing] = useState(false)
+    const [editQuestion, setEditQuestion] = useState(question.question_text)
+    const [editAnswer, setEditAnswer] = useState(question.answer_text)
     const answerRef = useRef(null)
 
     function handleReveal() {
@@ -560,6 +691,19 @@ function QuestionRow({ question, onDelete }) {
         }
     }
 
+    function handleEditSubmit(e) {
+        e.preventDefault()
+        if (!editQuestion.trim() || !editAnswer.trim()) return
+        onEdit(question.id, editQuestion.trim(), editAnswer.trim())
+        setEditing(false)
+    }
+
+    function handleEditCancel() {
+        setEditQuestion(question.question_text)
+        setEditAnswer(question.answer_text)
+        setEditing(false)
+    }
+
     function handleDeleteClick() {
         if (confirming) {
         onDelete(question.id)
@@ -570,67 +714,109 @@ function QuestionRow({ question, onDelete }) {
 
     return (
         <li className={styles.questionItem}>
-
-        {/* Question row — click to reveal answer */}
-        <button
-            className={styles.questionToggle}
-            onClick={handleReveal}
-        >
-            <div className={styles.questionTextWrapper}>
-            <span className={styles.questionLabel}>Question</span>
-            <span className={styles.questionText}>{question.question_text}</span>
+        {editing ? (
+            /* Inline edit form for question and answer */
+            <form onSubmit={handleEditSubmit} className={styles.flashcardEditForm}>
+            <div className={styles.cardInputs}>
+                <div className={styles.field}>
+                <label>Question</label>
+                <textarea
+                    value={editQuestion}
+                    onChange={(e) => setEditQuestion(e.target.value)}
+                    rows={3}
+                    autoFocus
+                />
+                </div>
+                <div className={styles.field}>
+                <label>Answer</label>
+                <textarea
+                    value={editAnswer}
+                    onChange={(e) => setEditAnswer(e.target.value)}
+                    rows={3}
+                />
+                </div>
             </div>
-            <span className={styles.toggleIcon}>{revealed ? '▲' : '▼'}</span>
-        </button>
-
-        {/* Answer — always mounted, hidden via height 0 */}
-        <div
-            ref={answerRef}
-            className={styles.answerPanel}
-            style={{ height: 0, opacity: 0, overflow: 'hidden' }}
-        >
-            <span className={styles.sideLabel}>Answer</span>
-            <p>{question.answer_text}</p>
-
-            {/* Mark correct/incorrect after revealing */}
-            <div className={styles.markRow}>
-            <button
-                className={styles.incorrectMark}
-                onClick={() => setRevealed(false)}
-            >
-                ✗ Incorrect
-            </button>
-            <button
-                className={styles.correctMark}
-                onClick={() => setRevealed(false)}
-            >
-                ✓ Correct
-            </button>
-            </div>
-        </div>
-
-        {/* Delete with confirmation */}
-        <div className={styles.cardActions}>
-            {confirming ? (
-            <>
-                <span className={styles.confirmText}>Delete this question?</span>
-                <button className={styles.confirmButton} onClick={handleDeleteClick}>
-                Yes, delete
-                </button>
+            <div className={styles.editFormActions}>
+                <button type="submit" className={styles.saveButton}>Save</button>
                 <button
+                type="button"
                 className={styles.cancelButton}
-                onClick={() => setConfirming(false)}
+                onClick={handleEditCancel}
                 >
                 Cancel
                 </button>
-            </>
-            ) : (
-            <button className={styles.deleteButton} onClick={handleDeleteClick}>
-                Delete
+            </div>
+            </form>
+        ) : (
+            <>
+            <button
+                className={styles.questionToggle}
+                onClick={handleReveal}
+            >
+                <div className={styles.questionTextWrapper}>
+                <span className={styles.questionLabel}>Question</span>
+                <span className={styles.questionText}>{question.question_text}</span>
+                </div>
+                <span className={styles.toggleIcon}>{revealed ? '▲' : '▼'}</span>
             </button>
-            )}
-        </div>
 
+            <div
+                ref={answerRef}
+                className={styles.answerPanel}
+                style={{ height: 0, opacity: 0, overflow: 'hidden' }}
+            >
+                <span className={styles.sideLabel}>Answer</span>
+                <p>{question.answer_text}</p>
+
+                <div className={styles.markRow}>
+                <button
+                    className={styles.incorrectMark}
+                    onClick={() => setRevealed(false)}
+                >
+                    ✗ Incorrect
+                </button>
+                <button
+                    className={styles.correctMark}
+                    onClick={() => setRevealed(false)}
+                >
+                    ✓ Correct
+                </button>
+                </div>
+            </div>
+
+            <div className={styles.cardActions}>
+                {confirming ? (
+                <>
+                    <span className={styles.confirmText}>Delete this question?</span>
+                    <button className={styles.confirmButton} onClick={handleDeleteClick}>
+                    Yes, delete
+                    </button>
+                    <button
+                    className={styles.cancelButton}
+                    onClick={() => setConfirming(false)}
+                    >
+                    Cancel
+                    </button>
+                </>
+                ) : (
+                <>
+                    <button
+                    className={styles.editButton}
+                    onClick={() => setEditing(true)}
+                    >
+                    Edit
+                    </button>
+                    <button
+                    className={styles.deleteButton}
+                    onClick={handleDeleteClick}
+                    >
+                    Delete
+                    </button>
+                </>
+                )}
+            </div>
+            </>
+        )}
         </li>
     )
 }

@@ -21,21 +21,29 @@ export default function Flashcard({ front, back, onCorrect, onIncorrect }) {
         return () => clearTimeout(timer)
     }, [front])
 
-    /* Allow spacebar to flip the card for keyboard users */
+    /* Keyboard shortcuts:
+        Space — flip the card
+        Right arrow — mark correct (only after flipping)
+        Left arrow — mark incorrect (only after flipping) */
     useEffect(() => {
         function handleKeyDown(e) {
         if (e.code === 'Space') {
             e.preventDefault()
             setFlipped(f => !f)
         }
+        if (e.code === 'ArrowRight' && flipped) {
+            e.preventDefault()
+            onCorrect()
+        }
+        if (e.code === 'ArrowLeft' && flipped) {
+            e.preventDefault()
+            onIncorrect()
+        }
         }
 
         window.addEventListener('keydown', handleKeyDown)
-
-        /* Clean up the event listener when the component
-        unmounts to avoid memory leaks */
         return () => window.removeEventListener('keydown', handleKeyDown)
-    }, [])
+    }, [flipped, onCorrect, onIncorrect])
 
     return (
         <div className={styles.wrapper}>
@@ -53,9 +61,12 @@ export default function Flashcard({ front, back, onCorrect, onIncorrect }) {
             </div>
 
             {/* Back face */}
-            <div className={styles.back}>
+            {/* Back face */}
+        <div className={styles.back}>
             <span className={styles.faceLabel}>Answer</span>
             <p className={styles.cardText}>{back}</p>
+            {/* Keyboard shortcut hints shown on back face */}
+            <span className={styles.flipHint}>← incorrect · correct →</span>
             </div>
         </div>
 

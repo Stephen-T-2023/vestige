@@ -10,12 +10,24 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import supabase from '../lib/supabaseClient'
 import styles from '../styles/Progress.module.css'
+import Skeleton from '../components/Skeleton'
+import EmptyState from '../components/EmptyState'
+import { useBreadcrumb } from '../lib/BreadcrumbContext'
 
 export default function Progress() {
     const router = useRouter()
     const [user, setUser] = useState(null)
     const [topicStats, setTopicStats] = useState([])
     const [loading, setLoading] = useState(true)
+
+    const { setCrumbs } = useBreadcrumb()
+
+    useEffect(() => {
+        setCrumbs([
+        { label: 'Dashboard', href: '/dashboard' },
+        { label: 'Progress' }
+        ])
+    }, [setCrumbs])
 
     /* Fetch all study sessions for the current user,
         grouped and calculated per topic */
@@ -85,19 +97,22 @@ export default function Progress() {
         init()
     }, [router])
 
-    if (loading) return null
+    if (loading) return (
+        <div style={{ maxWidth: 900, margin: '0 auto', padding: '2.5rem 2rem' }}>
+        <Skeleton height="1.5rem" width="160px" />
+        <div style={{ marginTop: '0.5rem', marginBottom: '2rem' }}>
+            <Skeleton height="0.875rem" width="320px" />
+        </div>
+        {[1,2,3,4].map(i => (
+            <div key={i} style={{ marginBottom: '0.75rem' }}>
+            <Skeleton height="4rem" />
+            </div>
+        ))}
+        </div>
+    )
 
     return (
         <div className={styles.container}>
-        <header className={styles.header}>
-            <h1 className={styles.logo}>Vestige</h1>
-            <button
-            className={styles.backButton}
-            onClick={() => router.push('/dashboard')}
-            >
-            ← Dashboard
-            </button>
-        </header>
 
         <main className={styles.main}>
 
@@ -107,9 +122,10 @@ export default function Progress() {
             </div>
 
             {topicStats.length === 0 ? (
-            <div className={styles.emptyState}>
-                <p>No study sessions yet. Complete a session to see your progress.</p>
-            </div>
+                <EmptyState
+                    message="No study sessions yet"
+                    hint="Complete a study session to see your progress here"
+                />
             ) : (
             <ul className={styles.statsList}>
                 {topicStats.map(t => (

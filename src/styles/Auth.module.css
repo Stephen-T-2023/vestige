@@ -124,3 +124,9 @@
     font-size: 0.875rem;
     margin-bottom: 1rem;
 }
+
+@media (max-width: 768px) {
+    .card {
+        padding: 1.5rem;
+    }
+}

@@ -12,6 +12,7 @@ import { useRouter } from 'next/router'
 import supabase from '../../lib/supabaseClient'
 import Flashcard from '../../components/flashcard'
 import styles from '../../styles/Study.module.css'
+import { useBreadcrumb } from '../../lib/BreadcrumbContext'
 
 export default function StudyPage() {
     const router = useRouter()
@@ -26,6 +27,18 @@ export default function StudyPage() {
     const [loading, setLoading] = useState(true)
 
     const [user, setUser] = useState(null)
+
+    const { setCrumbs } = useBreadcrumb()
+
+    useEffect(() => {
+        if (!topic) return
+        setCrumbs([
+        { label: 'Dashboard', href: '/dashboard' },
+        { label: topic.subjects?.name, href: `/subject/${topic.subjects?.id}` },
+        { label: topic.name, href: `/topic/${id}` },
+        { label: 'Study' }
+        ])
+    }, [topic, setCrumbs, id])
 
     /* Fetch the topic name and all its flashcards */
     async function fetchStudyData() {
@@ -148,22 +161,6 @@ export default function StudyPage() {
 
     return (
         <div className={styles.container}>
-        <header className={styles.header}>
-            <h1 className={styles.logo}>Vestige</h1>
-            <nav className={styles.breadcrumb}>
-            <button onClick={() => router.push('/dashboard')}>Dashboard</button>
-            <span>›</span>
-            <button onClick={() => router.push(`/subject/${topic?.subjects?.id}`)}>
-                {topic?.subjects?.name}
-            </button>
-            <span>›</span>
-            <button onClick={() => router.push(`/topic/${id}`)}>
-                {topic?.name}
-            </button>
-            <span>›</span>
-            <span>Study</span>
-            </nav>
-        </header>
 
         <main className={styles.main}>
 

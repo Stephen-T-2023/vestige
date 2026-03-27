@@ -9,27 +9,6 @@
     background: var(--colour-bg-primary);
 }
 
-.header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1.25rem 2rem;
-    border-bottom: 1px solid var(--colour-border);
-    background: var(--colour-bg-card);
-}
-
-.logo {
-    font-size: 1.5rem;
-    color: var(--colour-accent);
-    letter-spacing: 0.1em;
-}
-
-.backButton {
-    font-size: 0.75rem;
-    padding: 0.4rem 0.9rem;
-    letter-spacing: 0.1em;
-}
-
 .main {
     max-width: 900px;
     margin: 0 auto;
@@ -180,4 +159,24 @@
 .goToTopic:hover {
     color: var(--colour-accent-hover);
     border: none;
+}
+
+@media (max-width: 768px) {
+    .main {
+        padding: 1.5rem 1rem;
+    }
+
+    .statItem {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .statRight {
+        width: 100%;
+    }
+
+    .topicInfo {
+        min-width: unset;
+    }
 }

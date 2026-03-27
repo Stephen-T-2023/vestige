@@ -1,114 +1,206 @@
 /* ============================================
     Topic.module.css
     Vestige — Ashborne
-    Styles for the topic detail page
-   ============================================ */
+    Styles for the topic detail page with
+    sidebar layout
+     ============================================ */
 
-.container {
-    min-height: 100vh;
-    background: var(--colour-bg-primary);
+/* Full page layout — sidebar + main content */
+.layout {
+    display: flex;
+    min-height: calc(100vh - 56px);
 }
 
-.header {
+/* Sidebar */
+.sidebar {
+    width: 220px;
+    flex-shrink: 0;
+    border-right: 1px solid var(--colour-border);
+    background: var(--colour-bg-card);
+    padding: 2rem 0;
+    position: sticky;
+    top: 56px;
+    height: calc(100vh - 56px);
+    overflow-y: auto;
+}
+
+/* Topic name at top of sidebar */
+.sidebarTopic {
+    padding: 0 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--colour-border);
+    margin-bottom: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.sidebarTopicLabel {
+    font-family: var(--font-ui);
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--colour-text-muted);
+}
+
+.sidebarTopicName {
+    font-family: var(--font-primary);
+    font-size: 1rem;
+    color: var(--colour-text-primary);
+    line-height: 1.3;
+}
+
+/* Sidebar navigation */
+.sidebarNav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0 0.75rem;
+}
+
+/* Sidebar nav button */
+.sidebarLink {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 1.25rem 2rem;
-    border-bottom: 1px solid var(--colour-border);
-    background: var(--colour-bg-card);
-}
-
-.logo {
-    font-size: 1.5rem;
-    color: var(--colour-accent);
-    letter-spacing: 0.1em;
-}
-
-/* Breadcrumb navigation — Dashboard > Subject > Topic */
-.breadcrumb {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-family: var(--font-ui);
-    font-size: 0.75rem;
-    letter-spacing: 0.05em;
-}
-
-.breadcrumb button {
+    width: 100%;
+    padding: 0.6rem 0.75rem;
     background: none;
     border: none;
-    padding: 0;
-    font-size: 0.75rem;
-    color: var(--colour-text-muted);
-    text-transform: none;
+    border-radius: var(--radius-md);
+    text-align: left;
+    cursor: pointer;
+    font-family: var(--font-ui);
+    font-size: 0.8rem;
     letter-spacing: 0.05em;
+    color: var(--colour-text-secondary);
+    text-transform: none;
+    transition: all var(--transition-fast);
 }
 
-.breadcrumb button:hover {
+.sidebarLink:hover {
+    background: var(--colour-bg-secondary);
+    color: var(--colour-text-primary);
+    border: none;
+}
+
+/* Active sidebar link */
+.sidebarLinkActive {
+    background: var(--colour-bg-secondary);
     color: var(--colour-accent);
     border: none;
 }
 
-.breadcrumb span {
+.sidebarLinkActive:hover {
+    color: var(--colour-accent);
+}
+
+/* Study link — styled differently to stand out */
+.sidebarStudyLink {
+    margin-top: 0.75rem;
+    border: 1px solid var(--colour-accent) !important;
+    color: var(--colour-accent);
+}
+
+.sidebarStudyLink:hover {
+    background: var(--colour-accent);
+    color: var(--colour-bg-primary);
+    border-color: var(--colour-accent) !important;
+}
+
+/* Disabled state when no flashcards exist */
+.sidebarLinkDisabled {
+    border-color: var(--colour-border) !important;
+    color: var(--colour-text-muted) !important;
+    cursor: not-allowed;
+}
+
+.sidebarLinkDisabled:hover {
+    background: none;
+    color: var(--colour-text-muted) !important;
+}
+
+/* Count badge on sidebar links */
+.sidebarCount {
+    font-family: var(--font-ui);
+    font-size: 0.65rem;
     color: var(--colour-text-muted);
+    letter-spacing: 0.05em;
 }
 
+/* Saved indicator dot on notes link */
+.savedDot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--colour-success);
+}
+
+/* Main content area */
 .main {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 2.5rem 2rem;
+    flex: 1;
+    padding: 2.5rem 2.5rem;
+    min-width: 0;
 }
 
-.pageHeader {
+/* Section wrapper */
+.section {
+    max-width: 100%;
+}
+
+/* Section header with title and count */
+.sectionHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     margin-bottom: 1.5rem;
 }
 
-.pageHeader h2 {
-    margin-bottom: 0.25rem;
-}
-
-.pageHeader p {
-    font-family: var(--font-ui);
-    font-size: 0.8rem;
-    color: var(--colour-text-muted);
+.sectionHeader h2 {
     margin-bottom: 0;
 }
 
-/* Study mode button */
-.studyButton {
-    display: inline-block;
-    margin-bottom: 2rem;
-    padding: 0.6rem 1.5rem;
-    border-color: var(--colour-accent);
-    color: var(--colour-accent);
-    font-size: 0.875rem;
+.sectionCount {
+    font-family: var(--font-ui);
+    font-size: 0.75rem;
+    color: var(--colour-text-muted);
+    letter-spacing: 0.05em;
+}
+
+/* Save status for notes */
+.saveStatus {
+    font-family: var(--font-ui);
+    font-size: 0.7rem;
     letter-spacing: 0.1em;
+    color: var(--colour-text-muted);
 }
 
-.studyButton:hover {
-    background: var(--colour-accent);
-    color: var(--colour-bg-primary);
+/* Notes editor */
+.notesEditor {
+    width: 100%;
+    resize: vertical;
+    min-height: 320px;
+    font-family: var(--font-primary);
+    font-size: 0.95rem;
+    line-height: 1.7;
+    border-color: var(--colour-border);
+    background: var(--colour-bg-secondary);
+    padding: 1rem;
 }
 
-/* Add flashcard form */
+.notesEditor:focus {
+    outline: none;
+    border-color: var(--colour-accent);
+}
+
+/* Create form */
 .createForm {
     background: var(--colour-bg-card);
     border: 1px solid var(--colour-border);
     border-radius: var(--radius-lg);
     padding: 1.5rem;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
 }
 
-.createForm h3 {
-    font-size: 0.875rem;
-    font-family: var(--font-ui);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--colour-text-secondary);
-    margin-bottom: 1rem;
-}
-
-/* Front and back inputs side by side */
 .cardInputs {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -143,20 +235,6 @@
     color: var(--colour-bg-primary);
 }
 
-.emptyState {
-    padding: 3rem 0;
-    text-align: center;
-    border: 1px dashed var(--colour-border);
-    border-radius: var(--radius-lg);
-}
-
-.emptyState p {
-    color: var(--colour-text-muted);
-    font-family: var(--font-ui);
-    font-size: 0.875rem;
-    margin-bottom: 0;
-}
-
 /* Flashcard list */
 .flashcardList {
     list-style: none;
@@ -177,7 +255,6 @@
     border-color: var(--colour-accent);
 }
 
-/* Clickable row showing the front of the card */
 .flashcardToggle {
     width: 100%;
     display: flex;
@@ -199,7 +276,6 @@
     color: var(--colour-text-primary);
 }
 
-/* Front label and text stacked vertically */
 .cardFrontWrapper {
     display: flex;
     flex-direction: column;
@@ -227,7 +303,6 @@
     flex-shrink: 0;
 }
 
-/* Back of card revealed on expand */
 .cardBack {
     padding: 0.75rem 1.25rem 1rem;
     border-top: 1px solid var(--colour-border);
@@ -235,14 +310,22 @@
     overflow: hidden;
 }
 
-
 .cardBack p {
     font-size: 0.95rem;
     color: var(--colour-text-primary);
     margin-bottom: 0;
 }
 
-/* Action bar at the bottom of each card */
+.sideLabel {
+    font-family: var(--font-ui);
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--colour-text-muted);
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
 .cardActions {
     display: flex;
     align-items: center;
@@ -251,6 +334,42 @@
     padding: 0.5rem 1.25rem;
     border-top: 1px solid var(--colour-border);
     background: var(--colour-bg-secondary);
+}
+
+.flashcardEditForm {
+    padding: 1rem 1.25rem;
+}
+
+.editFormActions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
+
+.editButton {
+    font-size: 0.7rem;
+    padding: 0.3rem 0.75rem;
+    color: var(--colour-text-muted);
+    border-color: var(--colour-border);
+    letter-spacing: 0.1em;
+}
+
+.editButton:hover {
+    border-color: var(--colour-accent);
+    color: var(--colour-accent);
+}
+
+.saveButton {
+    font-size: 0.7rem;
+    padding: 0.3rem 0.75rem;
+    border-color: var(--colour-success);
+    color: var(--colour-success);
+    letter-spacing: 0.1em;
+}
+
+.saveButton:hover {
+    background: var(--colour-success);
+    color: var(--colour-bg-primary);
 }
 
 .deleteButton {
@@ -266,7 +385,6 @@
     color: var(--colour-danger);
 }
 
-/* Confirmation state styles */
 .confirmText {
     font-family: var(--font-ui);
     font-size: 0.75rem;
@@ -300,89 +418,6 @@
     color: var(--colour-text-secondary);
 }
 
-.error {
-    font-family: var(--font-ui);
-    font-size: 0.8rem;
-    color: var(--colour-danger);
-    margin-bottom: 1rem;
-}
-
-/* Notes section */
-.notesSection {
-    margin-bottom: 2rem;
-    background: var(--colour-bg-card);
-    border: 1px solid var(--colour-border);
-    border-radius: var(--radius-lg);
-    padding: 1.5rem;
-}
-
-.notesSectionHeader {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 1rem;
-}
-
-.notesSectionHeader h3 {
-    font-family: var(--font-ui);
-    font-size: 0.875rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--colour-text-secondary);
-}
-
-/* Auto save status indicator */
-.saveStatus {
-    font-family: var(--font-ui);
-    font-size: 0.7rem;
-    letter-spacing: 0.1em;
-    color: var(--colour-text-muted);
-}
-
-/* Notes textarea */
-.notesEditor {
-    width: 100%;
-    resize: vertical;
-    min-height: 160px;
-    font-family: var(--font-primary);
-    font-size: 0.95rem;
-    line-height: 1.7;
-    border-color: var(--colour-border);
-    background: var(--colour-bg-secondary);
-}
-
-.notesEditor:focus {
-    outline: none;
-    border-color: var(--colour-accent);
-}
-
-/* Practice questions section */
-.questionsSection {
-    margin-top: 2.5rem;
-}
-
-.questionsSectionHeader {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 1.5rem;
-}
-
-.questionsSectionHeader h3 {
-    font-family: var(--font-ui);
-    font-size: 0.875rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--colour-text-secondary);
-}
-
-.questionCount {
-    font-family: var(--font-ui);
-    font-size: 0.75rem;
-    color: var(--colour-text-muted);
-    letter-spacing: 0.05em;
-}
-
 /* Questions list */
 .questionList {
     list-style: none;
@@ -403,7 +438,6 @@
     border-color: var(--colour-accent);
 }
 
-/* Clickable question row */
 .questionToggle {
     width: 100%;
     display: flex;
@@ -446,7 +480,6 @@
     color: var(--colour-text-primary);
 }
 
-/* Answer panel revealed on click */
 .answerPanel {
     padding: 0.75rem 1.25rem 1rem;
     border-top: 1px solid var(--colour-border);
@@ -459,7 +492,6 @@
     margin-bottom: 0.75rem;
 }
 
-/* Correct/incorrect buttons inside answer panel */
 .markRow {
     display: flex;
     gap: 0.75rem;
@@ -489,4 +521,40 @@
 .correctMark:hover {
     background: var(--colour-success);
     color: var(--colour-bg-primary);
+}
+
+.error {
+    font-family: var(--font-ui);
+    font-size: 0.8rem;
+    color: var(--colour-danger);
+    margin-bottom: 1rem;
+}
+
+/* Mobile — stack sidebar above content */
+@media (max-width: 768px) {
+    .layout {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: static;
+        border-right: none;
+        border-bottom: 1px solid var(--colour-border);
+        padding: 1rem 0;
+    }
+
+    .sidebarNav {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .main {
+        padding: 1.5rem 1rem;
+    }
+
+    .cardInputs {
+        grid-template-columns: 1fr;
+    }
 }
