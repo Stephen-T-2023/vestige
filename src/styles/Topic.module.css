@@ -597,4 +597,13 @@
     .cardInputs {
         grid-template-columns: 1fr;
     }
+
+    /* Hide counts in mobile tab bar — saves space */
+    .sidebarCount {
+        display: none;
+    }
+
+    .sidebarLink span:first-child {
+        font-size: 0.75rem;
+    }
 }

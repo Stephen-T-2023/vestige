@@ -331,7 +331,7 @@ export default function TopicPage() {
                 onClick={() => flashcards.length > 0 && router.push(`/study/${id}`)}
                 title={flashcards.length === 0 ? 'Add flashcards to study' : ''}
             >
-                <span>Study →</span>
+                <span>Study</span>
                 {flashcards.length > 0 && (
                 <span className={styles.sidebarCount}>{flashcards.length} cards</span>
                 )}
