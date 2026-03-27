@@ -530,7 +530,6 @@
     margin-bottom: 1rem;
 }
 
-/* Mobile — stack sidebar above content */
 @media (max-width: 768px) {
     .layout {
         flex-direction: column;
@@ -539,15 +538,56 @@
     .sidebar {
         width: 100%;
         height: auto;
-        position: static;
+        position: sticky;
+        top: 56px;
+        z-index: 40;
         border-right: none;
         border-bottom: 1px solid var(--colour-border);
-        padding: 1rem 0;
+        padding: 0;
     }
 
+    /* Hide topic name on mobile sidebar — saves space */
+    .sidebarTopic {
+        display: none;
+    }
+
+    /* Horizontal tab bar on mobile */
     .sidebarNav {
         flex-direction: row;
-        flex-wrap: wrap;
+        padding: 0;
+        gap: 0;
+        overflow-x: auto;
+    }
+
+    .sidebarLink {
+        border-radius: 0;
+        padding: 0.875rem 1.25rem;
+        flex-shrink: 0;
+        border-bottom: 2px solid transparent;
+        font-size: 0.75rem;
+    }
+
+    .sidebarLinkActive {
+        background: none;
+        border-bottom: 2px solid var(--colour-accent);
+        color: var(--colour-accent);
+    }
+
+    .sidebarStudyLink {
+        margin-top: 0;
+        border: none !important;
+        border-bottom: 2px solid transparent !important;
+    }
+
+    .sidebarStudyLink:hover {
+        background: none;
+        color: var(--colour-accent);
+        border-bottom: 2px solid var(--colour-accent) !important;
+    }
+
+    .sidebarLinkDisabled {
+        border: none !important;
+        border-bottom: 2px solid transparent !important;
     }
 
     .main {

@@ -1,12 +1,11 @@
 /* ============================================
     Navbar.jsx
     Vestige — Ashborne
-    Global top navigation bar. Renders on every
-    page except login and signup. Handles session
-    checking, search, navigation and breadcrumbs.
+    Global top navigation bar. Desktop shows full
+    nav. Mobile collapses to hamburger menu.
    ============================================ */
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/router'
 import supabase from '../lib/supabaseClient'
 import SearchBar from './SearchBar'
@@ -17,7 +16,14 @@ export default function Navbar() {
     const router = useRouter()
     const [user, setUser] = useState(null)
     const [theme, setTheme] = useState('light')
+    const [menuOpen, setMenuOpen] = useState(false)
     const { crumbs } = useBreadcrumb()
+
+    /* Close menu on route change */
+    useEffect(() => {
+        const timer = setTimeout(() => setMenuOpen(false), 0)
+        return () => clearTimeout(timer)
+    }, [router.pathname])
 
     useEffect(() => {
         async function getUser() {
@@ -51,67 +57,120 @@ export default function Navbar() {
         localStorage.setItem('vestige-theme', newTheme)
     }
 
+    function navigate(path) {
+        setMenuOpen(false)
+        router.push(path)
+    }
+
     const hideOn = ['/login', '/signup']
     if (hideOn.includes(router.pathname)) return null
     if (!user) return null
 
     return (
+        <>
         <nav className={styles.navbar}>
-        <button
+            <button
             className={styles.logo}
             onClick={() => router.push('/dashboard')}
-        >
-            Vestige
-        </button>
-
-        {/* Breadcrumb trail — shown when crumbs are set by the current page */}
-        {crumbs.length > 0 && (
-            <div className={styles.breadcrumb}>
-            {crumbs.map((crumb, index) => (
-                <span key={index} className={styles.breadcrumbItem}>
-                {index > 0 && <span className={styles.breadcrumbSep}>›</span>}
-                {crumb.href ? (
-                    <button
-                    className={styles.breadcrumbLink}
-                    onClick={() => router.push(crumb.href)}
-                    >
-                    {crumb.label}
-                    </button>
-                ) : (
-                    /* Last crumb has no link — it's the current page */
-                    <span className={styles.breadcrumbCurrent}>{crumb.label}</span>
-                )}
-                </span>
-            ))}
-            </div>
-        )}
-
-        <div className={styles.center}>
-            <SearchBar userId={user.id} />
-        </div>
-
-        <div className={styles.right}>
-            <button
-            className={styles.themeToggle}
-            onClick={handleThemeToggle}
-            aria-label="Toggle dark mode"
             >
-            {theme === 'light' ? '●' : '○'}
+            Vestige
+            </button>
+
+            {/* Breadcrumb — desktop only */}
+            {crumbs.length > 0 && (
+            <div className={styles.breadcrumb}>
+                {crumbs.map((crumb, index) => (
+                <span key={index} className={styles.breadcrumbItem}>
+                    {index > 0 && <span className={styles.breadcrumbSep}>›</span>}
+                    {crumb.href ? (
+                    <button
+                        className={styles.breadcrumbLink}
+                        onClick={() => router.push(crumb.href)}
+                    >
+                        {crumb.label}
+                    </button>
+                    ) : (
+                    <span className={styles.breadcrumbCurrent}>{crumb.label}</span>
+                    )}
+                </span>
+                ))}
+            </div>
+            )}
+
+            {/* Search — desktop only */}
+            <div className={styles.center}>
+            <SearchBar userId={user.id} />
+            </div>
+
+            {/* Desktop right side */}
+            <div className={styles.right}>
+            <button
+                className={styles.themeToggle}
+                onClick={handleThemeToggle}
+                aria-label="Toggle dark mode"
+            >
+                {theme === 'light' ? '●' : '○'}
             </button>
             <button
-            className={styles.navLink}
-            onClick={() => router.push('/progress')}
+                className={styles.navLink}
+                onClick={() => router.push('/progress')}
             >
-            Progress
+                Progress
             </button>
             <span className={styles.email}>{user.email}</span>
             <button
-            className={styles.logoutButton}
-            onClick={handleLogout}
+                className={styles.logoutButton}
+                onClick={handleLogout}
             >
-            Sign out
+                Sign out
             </button>
-        </div>
+            </div>
+
+            {/* Hamburger — mobile only */}
+            <button
+            className={styles.hamburger}
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label="Open menu"
+            >
+            {menuOpen ? '✕' : '☰'}
+            </button>
         </nav>
+
+        {/* Mobile menu */}
+        <div className={`${styles.mobileMenu} ${menuOpen ? styles.open : ''}`}>
+            <div className={styles.mobileSearchWrap}>
+            <SearchBar userId={user.id} />
+            </div>
+
+            <div className={styles.mobileNav}>
+            <button
+                className={styles.mobileNavButton}
+                onClick={() => navigate('/dashboard')}
+            >
+                Dashboard
+            </button>
+            <button
+                className={styles.mobileNavButton}
+                onClick={() => navigate('/progress')}
+            >
+                Progress
+            </button>
+            <button
+                className={styles.mobileNavButton}
+                onClick={handleThemeToggle}
+            >
+                {theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
+            </button>
+            <button
+                className={styles.mobileNavButton}
+                onClick={handleLogout}
+            >
+                Sign out
+            </button>
+            </div>
+
+            <span className={styles.mobileEmail}>{user.email}</span>
+        </div>
+        </>
     )
 }
