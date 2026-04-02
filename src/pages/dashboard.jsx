@@ -14,6 +14,7 @@ import Skeleton from '../components/Skeleton'
 import toast from 'react-hot-toast'
 import EmptyState from '../components/EmptyState'
 import { useBreadcrumb } from '../lib/BreadcrumbContext'
+import BetaBanner from '../components/BetaBanner'
 
 export default function Dashboard() {
     const router = useRouter()
@@ -157,6 +158,11 @@ export default function Dashboard() {
     )
 
     return (
+        <>
+        <BetaBanner />
+        <div className={styles.container}>
+            {/* rest of dashboard */}
+        </div>
         <div className={styles.container}>
 
         <main className={styles.main}>
@@ -208,6 +214,7 @@ export default function Dashboard() {
 
         </main>
         </div>
+        </>
     )
 }
 

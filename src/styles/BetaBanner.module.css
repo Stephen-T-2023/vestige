@@ -1,0 +1,98 @@
+/* ============================================
+   BetaBanner.module.css
+   Vestige — Ashborne
+   Styles for the beta feedback banner
+   ============================================ */
+
+.banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.875rem 2rem;
+  background: var(--colour-bg-card);
+  border-bottom: 1px solid var(--colour-accent);
+  flex-wrap: wrap;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.badge {
+  font-family: var(--font-ui);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--colour-accent);
+  border: 1px solid var(--colour-accent);
+  border-radius: var(--radius-sm);
+  padding: 0.15rem 0.4rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.message {
+  font-family: var(--font-ui);
+  font-size: 0.8rem;
+  color: var(--colour-text-secondary);
+  letter-spacing: 0.03em;
+  margin-bottom: 0;
+  line-height: 1.5;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.feedbackButton {
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--colour-accent);
+  border: 1px solid var(--colour-accent);
+  border-radius: var(--radius-md);
+  padding: 0.4rem 0.9rem;
+  text-decoration: none;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.feedbackButton:hover {
+  background: var(--colour-accent);
+  color: var(--colour-bg-primary);
+}
+
+.dismissButton {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: var(--font-ui);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--colour-text-muted);
+  cursor: pointer;
+}
+
+.dismissButton:hover {
+  border: none;
+  color: var(--colour-text-primary);
+}
+
+@media (max-width: 768px) {
+  .banner {
+    padding: 0.875rem 1rem;
+  }
+
+  .message {
+    font-size: 0.75rem;
+  }
+}

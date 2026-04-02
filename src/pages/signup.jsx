@@ -86,12 +86,22 @@ export default function Signup() {
                 {error && <p className={styles.error}>{error}</p>}
 
                 <button
-                type="submit"
-                className={styles.button}
-                disabled={loading}
+                    type="submit"
+                    className={styles.button}
+                    disabled={loading}
                 >
-                {loading ? 'Creating account...' : 'Create account'}
+                    {loading ? 'Creating account...' : 'Create account'}
                 </button>
+
+                {/* Age and privacy policy confirmation */}
+                <p className={styles.legal}>
+                    By creating an account you confirm you are aged 13 or over
+                    and agree to our{' '}
+                    <a href="/privacy" className={styles.legalLink}>
+                    Privacy Policy
+                    </a>
+                    .
+                </p>
 
             </form>
             )}
