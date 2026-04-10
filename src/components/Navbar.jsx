@@ -117,6 +117,12 @@ export default function Navbar() {
             >
                 Progress
             </button>
+            <button
+                className={styles.navLink}
+                onClick={() => router.push('/account')}
+            >
+                Account
+            </button>
             <span className={styles.email}>{user.email}</span>
             <button
                 className={styles.logoutButton}
@@ -154,6 +160,12 @@ export default function Navbar() {
                 onClick={() => navigate('/progress')}
             >
                 Progress
+            </button>
+            <button
+                className={styles.mobileNavButton}
+                onClick={() => navigate('/account')}
+            >
+                Account
             </button>
             <button
                 className={styles.mobileNavButton}

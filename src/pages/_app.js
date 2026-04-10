@@ -1,4 +1,13 @@
+/* ============================================
+   _app.js
+   Vestige — Ashborne
+   Root application component. Global CSS,
+   Navbar, Footer and toast notifications
+   loaded here.
+   ============================================ */
+
 import Navbar from '../components/Navbar'
+import Footer from '../components/Footer'
 import '../styles/globals.css'
 import { Toaster } from 'react-hot-toast'
 import { BreadcrumbProvider } from '../lib/BreadcrumbContext'
@@ -6,7 +15,13 @@ import { BreadcrumbProvider } from '../lib/BreadcrumbContext'
 export default function App({ Component, pageProps }) {
   return (
     <BreadcrumbProvider>
-      <Navbar />
+      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100svh' }}>
+        <Navbar />
+        <div style={{ flex: 1 }}>
+          <Component {...pageProps} />
+        </div>
+        <Footer />
+      </div>
       <Toaster
         position="bottom-right"
         toastOptions={{
@@ -32,7 +47,6 @@ export default function App({ Component, pageProps }) {
           },
         }}
       />
-      <Component {...pageProps} />
     </BreadcrumbProvider>
   )
 }

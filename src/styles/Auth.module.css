@@ -130,3 +130,23 @@
         padding: 1.5rem;
     }
 }
+
+/* Legal confirmation text below signup button */
+.legal {
+  font-family: var(--font-ui);
+  font-size: 0.7rem;
+  color: var(--colour-text-muted);
+  letter-spacing: 0.03em;
+  text-align: center;
+  line-height: 1.6;
+  margin-bottom: 0;
+}
+
+.legalLink {
+  color: var(--colour-accent);
+  text-decoration: none;
+}
+
+.legalLink:hover {
+  color: var(--colour-accent-hover);
+}
