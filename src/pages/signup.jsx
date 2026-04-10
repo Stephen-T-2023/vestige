@@ -51,10 +51,9 @@ export default function Signup() {
             </div>
 
             {success ? (
-            /* Shown after successful signup */
             <div className={styles.successMessage}>
-                <p>Check your email to confirm your account.</p>
-                <a href="/login">Back to login</a>
+                <p>Account created. You can now sign in.</p>
+                <a href="/login">Go to login</a>
             </div>
             ) : (
             <form onSubmit={handleSignup} className={styles.form}>
